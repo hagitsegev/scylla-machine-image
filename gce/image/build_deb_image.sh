@@ -19,6 +19,8 @@ source ../../SCYLLA-VERSION-GEN
 
 PRODUCT=$(cat build/SCYLLA-PRODUCT-FILE)
 BUILD_ID=$(date -u '+%FT%H-%M-%S')
+BRANCH="master"
+OPERATING_SYSTEM="ubuntu20.04"
 DIR=$(dirname $(readlink -f $0))
 
 print_usage() {
@@ -31,6 +33,8 @@ print_usage() {
     echo "  --download-no-server download all rpms needed excluding scylla using .repo provided in --repo-for-install"
     echo "  --dry-run            validate template only (image is not built)"
     echo "  --build-id           Set unique build ID, will be part of GCE image name"
+    echo "  [--branch]           Set the release branch for GCE label. Default: master"
+    echo "  [--operating-system] Set the base OS for the image. Default: ubuntu20.04"
     echo "  --log-file           Path for log. Default build/packer.log on current dir"
     exit 1
 }
@@ -68,6 +72,14 @@ while [ $# -gt 0 ]; do
             ;;
         "--build-id")
             BUILD_ID=$2
+            shift 2
+            ;;
+        "--branch")
+            BRANCH=$2
+            shift 2
+            ;;
+        "--operating-system")
+            OPERATING_SYSTEM=$2
             shift 2
             ;;
         "--log-file")
@@ -193,6 +205,8 @@ echo "SCYLLA_JMX_VERSION: $SCYLLA_JMX_VERSION"
 echo "SCYLLA_TOOLS_VERSION: $SCYLLA_TOOLS_VERSION"
 echo "SCYLLA_PYTHON3_VERSION: $SCYLLA_PYTHON3_VERSION"
 echo "BUILD_ID: $BUILD_ID"
+echo "OPERATING_SYSTEM: $OPERATING_SYSTEM"
+echo "BRANCH: $BRANCH"
 echo "Calling Packer..."
 
 /usr/bin/packer ${PACKER_SUB_CMD} \
@@ -205,6 +219,8 @@ echo "Calling Packer..."
   -var scylla_jmx_version="$SCYLLA_JMX_VERSION" \
   -var scylla_tools_version="$SCYLLA_TOOLS_VERSION" \
   -var scylla_python3_version="$SCYLLA_PYTHON3_VERSION" \
+  -var operating_system="$OPERATING_SYSTEM" \
+  -var branch="$BRANCH" \
   -var scylla_build_id="$BUILD_ID" \
   scylla_gce.json
 

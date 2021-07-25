@@ -18,6 +18,8 @@
       "omit_external_ip": false,
       "disk_size": 20,
       "image_labels":  {
+          "branch": "{{user `branch`| clean_resource_name}}",
+          "operating_system": "{{user `operating_system`| clean_resource_name}}",
           "scylla_version": "{{user `scylla_version`| clean_resource_name}}",
           "scylla_machine_image_version": "{{user `scylla_machine_image_version`| clean_resource_name}}",
           "scylla_jmx_version": "{{user `scylla_jmx_version`| clean_resource_name}}",
